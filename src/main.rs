@@ -47,20 +47,30 @@ fn main() {
     println!("Number to factor: {}\n", num);
 
     // Testing multithreading in Rust
-    let increment = (num.sqrt()).div(nthreads as usize);
+    let final_bound = num.clone().div(2 as usize).add(1 as usize);
+    let increment = final_bound.clone().div(nthreads as usize);
     let mut start_point = BigUint::from(0 as usize);
     let mut end_point = increment.clone();
 
+    println!("Final bound: {}", final_bound);
     println!("Increment: {}", increment);
     println!("Start point: {}", start_point);
-    println!("End point: {}\n\n", end_point);
+    println!("End point: {}\n", end_point);
+
+    println!("Thread setup:\n");
 
     let (tx, rx) = mpsc::channel(); 
 
-    for _ in 0..nthreads {
+    for i in 0..nthreads {
         let tx_clone = tx.clone();
         let st_clone = start_point.clone();
-        let en_clone = end_point.clone();
+        
+        let en_clone = if i + 1 == nthreads {
+            final_bound.clone()
+        } else {
+            end_point.clone()
+        };
+
         let num_clone = num.clone();
 
         println!("Start point: {}", st_clone);
